@@ -1,0 +1,51 @@
+version: '3.3'
+services:
+
+  client:
+    build:
+      context: ./reactapp
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+     - api
+    networks: 
+      - backend1
+
+  api:
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+     - user
+     - department
+    networks: 
+      - backend1
+
+  user:
+    container_name: user
+    build:
+      context: ./userservice
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    command: ["pipenv", "run", "flask", "run", "--host=0.0.0.0"]
+    networks: 
+      - backend1
+
+  department:
+    container_name: department
+    build:
+      context: ./departmentservice
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    command: ["pipenv", "run", "flask", "run", "--host=0.0.0.0"]
+    networks: 
+      - backend1
+      
+networks:
+  backend1:
+    driver: "bridge"
